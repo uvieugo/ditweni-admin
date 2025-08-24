@@ -55,14 +55,20 @@ export default function ProductEdit() {
     setSaving(true);
     setError(null);
     const formData = new FormData();
-    // console.log(values);
+    console.log(values);
     formData.append('title', values.title);
     formData.append('description', values.description);
     formData.append('product_category_id', values.product_category_id);
-    formData.append('price', values.price);
-    formData.append('currency', values.currency);
+    // formData.append('price', values.price);
+    // formData.append('currency', values.currency);
     formData.append('featured', values.featured);
     formData.append('active', values.active);
+    // formData.append('product_prices_attributes', JSON.stringify(values.prices));
+    values.prices.forEach((price, idx) => {
+      Object.keys(price).forEach((key) => {
+        formData.append(`product_prices_attributes[${idx}][${key}]`, price[key]);
+      });
+    });
     if (values.imageFile) {
       formData.append('image', values.imageFile);
     }

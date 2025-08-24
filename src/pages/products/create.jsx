@@ -38,11 +38,22 @@ export default function ProductCreate() {
     formData.append('title', values.title);
     formData.append('description', values.description);
     formData.append('product_category_id', values.product_category_id);
-    formData.append('price', values.price);
-    formData.append('currency', values.currency);
+    // formData.append('price', values.price);
+    // formData.append('currency', values.currency);
     formData.append('featured', values.featured);
     formData.append('active', values.active);
-    formData.append('image', values.imageFile);
+    // formData.append('image', values.imageFile);
+    values.prices.forEach((price, idx) => {
+      Object.keys(price).forEach((key) => {
+        formData.append(`product_prices_attributes[${idx}][${key}]`, price[key]);
+      });
+    });
+    if (values.imageFile) {
+      formData.append('image', values.imageFile);
+    }
+    if (values.sampleFile) {
+      formData.append('sample', values.sampleFile);
+    }
 
     try {
       await createProduct(formData);

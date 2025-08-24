@@ -26,6 +26,8 @@ import { FormattedMessage } from 'react-intl';
 // icons
 import { Camera, Trash } from 'iconsax-reactjs';
 
+import { useGetLicenseTypes } from '../../api/license_types';
+
 // project imports
 
 // validation schema
@@ -33,26 +35,47 @@ const validationSchema = Yup.object({
   title: Yup.string().required('Title is required').max(255, 'Title must be 255 characters or less'),
   description: Yup.string().required('Description is required'),
   product_category_id: Yup.string().required('Category is required'),
-  // price: Yup.number().required('Price is required').min(0, 'Price must be positive'),
-  // currency: Yup.string().required('Currency is required'),
-  // image: Yup.string().nullable(), // Will be set by backend after upload
+  prices: Yup.array().of(
+    Yup.object().shape({
+      license_type_id: Yup.number().required(),
+      ngn_amount: Yup.number().min(0, 'Price must be positive').nullable(),
+      usd_amount: Yup.number().min(0, 'Price must be positive').nullable()
+    })
+  ),
   featured: Yup.boolean(),
   active: Yup.boolean()
 });
 
 // sample currencies - replace with your actual currencies
 const currencies = ['USD', 'NGN'];
+// const licenseTypes = [
+//   { id: 1, name: 'Standard' },
+//   { id: 2, name: 'Premium' }
+// ];
 
 // ==============================|| PRODUCT FORM ||============================== //
 
 export default function ProductForm({ initialValues, onSubmit, isLoading = false, productCategories }) {
   const navigate = useNavigate();
+  const { licenseTypes, licenseTypesLoading, licenseTypesError } = useGetLicenseTypes();
+
+  // Initialize useLicense based on existing product's category if editing
+  const initialCategory = productCategories?.find((cat) => cat.id === initialValues?.product_category_id);
+  const [useLicense, setUseLicense] = useState(initialCategory?.uses_licenses || false);
   const defaultValues = {
     title: '',
     description: '',
     product_category_id: '',
-    usd_price: '',
-    ngn_price: '',
+    // Prices as array of objects
+    // prices: [
+    //   { license_type_id: 1, ngn_amount: 0, usd_amount: 0 }, // Standard
+    //   { license_type_id: 2, ngn_amount: 0, usd_amount: 0 } // Premium
+    // ],
+    prices: licenseTypes.map((licenseType) => ({
+      license_type_id: licenseType.id,
+      ngn_amount: 0,
+      usd_amount: 0
+    })),
     currency: 'USD',
     image_url: '',
     sample_url: '',
@@ -94,6 +117,144 @@ export default function ProductForm({ initialValues, onSubmit, isLoading = false
                 helperText={touched.description && errors.description}
               />
             </Grid>
+            <Grid item size={{ xs: 12, md: 12 }}>
+              <TextField
+                fullWidth
+                select
+                name="product_category_id"
+                label="Category"
+                value={values.product_category_id}
+                // onChange={handleChange}
+                onChange={(e) => {
+                  setFieldValue('product_category_id', e.target.value);
+                  let hasLicense = productCategories.find((cat) => cat.id === e.target.value)?.uses_licenses;
+                  setUseLicense(hasLicense);
+
+                  // Initialize prices array based on license type
+                  if (hasLicense) {
+                    // Initialize with all license types
+                    const newPrices = licenseTypes.map((licenseType) => ({
+                      license_type_id: licenseType.id,
+                      ngn_price: 0,
+                      usd_price: 0
+                    }));
+                    setFieldValue('prices', newPrices);
+                  } else {
+                    // Initialize with only standard license
+                    setFieldValue('prices', [{ license_type_id: 1, ngn_price: 0, usd_price: 0 }]);
+                  }
+                }}
+                onBlur={handleBlur}
+                error={touched.product_category_id && Boolean(errors.product_category_id)}
+                helperText={touched.product_category_id && errors.product_category_id}
+              >
+                {productCategories.map((category) => (
+                  <MenuItem key={category.id} value={category.id}>
+                    {category.name}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+            {/* Dynamic Price Fields based on license types */}
+            {useLicense ? (
+              // Multiple license types - show price fields for each license type
+              <>
+                {licenseTypes.map((licenseType, index) => {
+                  const priceIndex = values.prices?.findIndex((p) => p.license_type_id === licenseType.id) ?? index;
+                  return (
+                    <Grid item size={12} key={licenseType.id}>
+                      <Typography variant="subtitle2" gutterBottom>
+                        {licenseType.name} License Pricing
+                      </Typography>
+                      <Grid container spacing={2}>
+                        <Grid item size={{ xs: 12, md: 6 }}>
+                          <TextField
+                            fullWidth
+                            type="number"
+                            name={`prices.${priceIndex}.ngn_amount`}
+                            label={`${licenseType.name} NGN Amount`}
+                            value={values.prices?.[priceIndex]?.ngn_amount || ''}
+                            onChange={(e) => {
+                              const newPrices = [...(values.prices || [])];
+                              if (!newPrices[priceIndex]) {
+                                newPrices[priceIndex] = { license_type_id: licenseType.id, ngn_amount: 0, usd_amount: 0 };
+                              }
+                              newPrices[priceIndex].ngn_amount = parseFloat(e.target.value) || 0;
+                              setFieldValue('prices', newPrices);
+                            }}
+                            onBlur={handleBlur}
+                            error={touched.prices?.[priceIndex]?.ngn_amount && Boolean(errors.prices?.[priceIndex]?.ngn_amount)}
+                            helperText={touched.prices?.[priceIndex]?.ngn_amount && errors.prices?.[priceIndex]?.ngn_amount}
+                            slotProps={{ inputProps: { step: '0.01', min: '0' } }}
+                          />
+                        </Grid>
+                        <Grid item size={{ xs: 12, md: 6 }}>
+                          <TextField
+                            fullWidth
+                            type="number"
+                            name={`prices.${priceIndex}.usd_amount`}
+                            label={`${licenseType.name} USD Amount`}
+                            value={values.prices?.[priceIndex]?.usd_amount || ''}
+                            onChange={(e) => {
+                              const newPrices = [...(values.prices || [])];
+                              if (!newPrices[priceIndex]) {
+                                newPrices[priceIndex] = { license_type_id: licenseType.id, ngn_amount: 0, usd_amount: 0 };
+                              }
+                              newPrices[priceIndex].usd_amount = parseFloat(e.target.value) || 0;
+                              setFieldValue('prices', newPrices);
+                            }}
+                            onBlur={handleBlur}
+                            error={touched.prices?.[priceIndex]?.usd_amount && Boolean(errors.prices?.[priceIndex]?.usd_amount)}
+                            helperText={touched.prices?.[priceIndex]?.usd_amount && errors.prices?.[priceIndex]?.usd_amount}
+                            slotProps={{ inputProps: { step: '0.01', min: '0' } }}
+                          />
+                        </Grid>
+                      </Grid>
+                    </Grid>
+                  );
+                })}
+              </>
+            ) : (
+              // Standard license only - show single price fields
+              <>
+                <Grid item size={{ xs: 12, md: 6 }}>
+                  <TextField
+                    fullWidth
+                    type="number"
+                    name="prices.0.ngn_amount"
+                    label="NGN Amount (Standard)"
+                    value={values.prices?.[0]?.ngn_amount || ''}
+                    onChange={(e) => {
+                      const newPrices = [...(values.prices || [{ license_type_id: 1, ngn_amount: 0, usd_amount: 0 }])];
+                      newPrices[0] = { ...newPrices[0], license_type_id: 1, ngn_amount: parseFloat(e.target.value) || 0 };
+                      setFieldValue('prices', newPrices);
+                    }}
+                    onBlur={handleBlur}
+                    error={touched.prices?.[0]?.ngn_amount && Boolean(errors.prices?.[0]?.ngn_amount)}
+                    helperText={touched.prices?.[0]?.ngn_amount && errors.prices?.[0]?.ngn_amount}
+                    slotProps={{ inputProps: { step: '0.01', min: '0' } }}
+                  />
+                </Grid>
+                <Grid item size={{ xs: 12, md: 6 }}>
+                  <TextField
+                    fullWidth
+                    type="number"
+                    name="prices.0.usd_amount"
+                    label="USD Amount (Standard)"
+                    value={values.prices?.[0]?.usd_amount || ''}
+                    onChange={(e) => {
+                      const newPrices = [...(values.prices || [{ license_type_id: 1, ngn_amount: 0, usd_amount: 0 }])];
+                      newPrices[0] = { ...newPrices[0], license_type_id: 1, usd_amount: parseFloat(e.target.value) || 0 };
+                      setFieldValue('prices', newPrices);
+                    }}
+                    onBlur={handleBlur}
+                    error={touched.prices?.[0]?.usd_amount && Boolean(errors.prices?.[0]?.usd_amount)}
+                    helperText={touched.prices?.[0]?.usd_amount && errors.prices?.[0]?.usd_amount}
+                    slotProps={{ inputProps: { step: '0.01', min: '0' } }}
+                  />
+                </Grid>
+              </>
+            )}
             <Grid item size={12}>
               <Typography variant="subtitle1" gutterBottom>
                 <FormattedMessage id="upload-product-image" />
@@ -267,53 +428,7 @@ export default function ProductForm({ initialValues, onSubmit, isLoading = false
                 )}
               </Box>
             </Grid>
-            <Grid item size={{ xs: 12, md: 6 }}>
-              <TextField
-                fullWidth
-                select
-                name="product_category_id"
-                label="Category"
-                value={values.product_category_id}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                error={touched.product_category_id && Boolean(errors.product_category_id)}
-                helperText={touched.product_category_id && errors.product_category_id}
-              >
-                {productCategories.map((category) => (
-                  <MenuItem key={category.id} value={category.id}>
-                    {category.name}
-                  </MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-            <Grid item size={{ xs: 12, md: 3 }}>
-              <TextField
-                fullWidth
-                type="number"
-                name="ngn_price"
-                label="NGN Price"
-                value={values.ngn_price}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                error={touched.ngn_price && Boolean(errors.ngn_price)}
-                helperText={touched.ngn_price && errors.ngn_price}
-                inputProps={{ step: '0.01', min: '0' }}
-              />
-            </Grid>
-            <Grid item size={{ xs: 12, md: 3 }}>
-              <TextField
-                fullWidth
-                type="number"
-                name="usd_price"
-                label="USD Price"
-                value={values.usd_price}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                error={touched.usd_price && Boolean(errors.usd_price)}
-                helperText={touched.usd_price && errors.usd_price}
-                inputProps={{ step: '0.01', min: '0' }}
-              />
-            </Grid>
+
             {/* <Grid item size={{ xs: 12, md: 3 }}>
               <TextField
                 fullWidth

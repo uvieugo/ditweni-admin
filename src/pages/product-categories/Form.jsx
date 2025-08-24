@@ -50,36 +50,18 @@ const validationSchema = Yup.object({
 
 export default function ProductForm({ initialValues, onSubmit, isLoading = false }) {
   const navigate = useNavigate();
-  const [imageUploading, setImageUploading] = useState(false);
-  const [uploadError, setUploadError] = useState(null);
 
   const defaultValues = {
     name: '',
     description: '',
+    uses_licenses: false,
     image_url: '',
     imageFile: null,
     ...initialValues
   };
 
-  const handleImageUpload = async (file, setFieldValue) => {
-    if (!file) return;
-
-    setImageUploading(true);
-    setUploadError(null);
-
-    try {
-      const formData = new FormData();
-      formData.append('image', file);
-
-      const response = await uploadImage(formData);
-      setFieldValue('image', response.url);
-    } catch (error) {
-      setUploadError('Failed to upload image. Please try again.');
-      console.error('Image upload error:', error);
-    } finally {
-      setImageUploading(false);
-    }
-  };
+  // console.log(initialValues);
+  // console.log(defaultValues);
 
   return (
     <Formik initialValues={defaultValues} validationSchema={validationSchema} onSubmit={onSubmit} enableReinitialize>
@@ -112,6 +94,18 @@ export default function ProductForm({ initialValues, onSubmit, isLoading = false
                 helperText={touched.description && errors.description}
               />
             </Grid>
+            <Grid item size={{ xs: 12, md: 6 }}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={values.uses_licenses}
+                    onChange={(e) => setFieldValue('uses_licenses', e.target.checked)}
+                    name="uses_license"
+                  />
+                }
+                label="Uses Licenses"
+              />
+            </Grid>
             <Grid item size={{ xs: 12, md: 12 }}>
               <Typography variant="subtitle1" gutterBottom>
                 <FormattedMessage id="upload-product-image" />
@@ -132,7 +126,6 @@ export default function ProductForm({ initialValues, onSubmit, isLoading = false
                   <Box sx={{ position: 'relative', display: 'inline-block' }}>
                     <Box
                       component="img"
-                      // src={values.image}
                       src={values.imageFile ? URL.createObjectURL(values.imageFile) : values.image_url}
                       alt="Product preview"
                       sx={{
@@ -150,7 +143,6 @@ export default function ProductForm({ initialValues, onSubmit, isLoading = false
                     <IconButton
                       size="small"
                       color="error"
-                      // onClick={() => setFieldValue('image', '')}
                       onClick={() => {
                         setFieldValue('image_url', '');
                         setFieldValue('imageFile', null);
@@ -178,45 +170,40 @@ export default function ProductForm({ initialValues, onSubmit, isLoading = false
                   </Box>
                 )}
 
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => {
-                    const file = e.target.files[0];
-                    if (file) {
-                      // handleImageUpload(file, setFieldValue);
+                {!values.imageFile && !values.image_url && (
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files[0];
+                      if (file) {
+                        // handleImageUpload(file, setFieldValue);
 
-                      setFieldValue('imageFile', file);
-                      setFieldValue('image', '');
-                    }
-                  }}
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    height: '100%',
-                    opacity: 0,
-                    cursor: 'pointer'
-                  }}
-                />
+                        setFieldValue('imageFile', file);
+                        setFieldValue('image', '');
+                      }
+                    }}
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      width: '100%',
+                      height: '100%',
+                      opacity: 0,
+                      cursor: 'pointer'
+                    }}
+                  />
+                )}
               </Box>
 
               {/* Upload Progress */}
-              {imageUploading && (
+              {isLoading && (
                 <Box sx={{ mt: 2 }}>
                   <LinearProgress />
                   <Typography variant="caption" color="textSecondary" sx={{ mt: 1 }}>
                     <FormattedMessage id="uploading-image" />
                   </Typography>
                 </Box>
-              )}
-
-              {/* Upload Error */}
-              {uploadError && (
-                <Alert severity="error" sx={{ mt: 2 }}>
-                  {uploadError}
-                </Alert>
               )}
             </Grid>
 

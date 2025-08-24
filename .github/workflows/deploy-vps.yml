@@ -1,0 +1,59 @@
+name: Deploy to VPS (rsync)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'yarn'
+
+      - name: Enable Corepack (Yarn 4)
+        run: corepack enable
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Build
+        env:
+          # Set base for Vite to your site root or subpath on the VPS (e.g., '/')
+          VITE_APP_BASE_NAME: ${{ secrets.VPS_BASE_PATH }}
+        run: |
+          echo "Building with base: ${VITE_APP_BASE_NAME:-/}"
+          if [ -z "$VITE_APP_BASE_NAME" ]; then export VITE_APP_BASE_NAME=/; fi
+          yarn build
+
+      - name: Deploy via rsync over SSH
+        uses: burnett01/rsync-deployments@7.0.1
+        with:
+          switches: -avzr --delete
+          path: dist/
+          remote_path: ${{ secrets.VPS_PATH }}
+          remote_host: ${{ secrets.VPS_HOST }}
+          remote_user: ${{ secrets.VPS_USER }}
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}
+          remote_port: ${{ secrets.VPS_PORT }}
+
+      # - name: Post-deploy (optional)
+      #   uses: appleboy/ssh-action@v1.0.3
+      #   with:
+      #     host: ${{ secrets.VPS_HOST }}
+      #     username: ${{ secrets.VPS_USER }}
+      #     key: ${{ secrets.SSH_PRIVATE_KEY }}
+      #     port: ${{ secrets.VPS_PORT }}
+      #     script: |
+      #       # Example: reload nginx or restart a service
+      #       sudo systemctl reload nginx

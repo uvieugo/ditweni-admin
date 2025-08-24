@@ -42,7 +42,7 @@ export async function createProduct(payload) {
 
 export async function updateProduct(id, payload) {
   const res = await axiosServices.put(`${endpoints.list}/${id}`, payload);
-  mutate(endpoints.list);
+  // mutate(endpoints.list);
   return res.data;
 }
 
