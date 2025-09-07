@@ -102,13 +102,13 @@ export default function OrderForm({ initialValues, onSubmit, isLoading = false }
         <Form>
           <Grid container spacing={3}>
             {/* Customer Information */}
-            <Grid item xs={12}>
+            <Grid item size={12}>
               <Typography variant="h6" gutterBottom>
                 <FormattedMessage id="customer-information" />
               </Typography>
             </Grid>
 
-            <Grid item xs={12} md={6}>
+            <Grid item size={{ xs: 12, md: 6 }}>
               <Autocomplete
                 options={customers}
                 getOptionLabel={(option) => `${option.first_name} ${option.last_name} (${option.email})`}
@@ -130,7 +130,7 @@ export default function OrderForm({ initialValues, onSubmit, isLoading = false }
               />
             </Grid>
 
-            <Grid item xs={12} md={6}>
+            <Grid item size={{ xs: 12, md: 6 }}>
               <TextField
                 fullWidth
                 select
@@ -151,13 +151,13 @@ export default function OrderForm({ initialValues, onSubmit, isLoading = false }
             </Grid>
 
             {/* Shipping Information */}
-            <Grid item xs={12}>
+            <Grid item size={12}>
               <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>
                 <FormattedMessage id="shipping-information" />
               </Typography>
             </Grid>
 
-            <Grid item xs={12} md={6}>
+            <Grid item size={{ xs: 12, md: 6 }}>
               <TextField
                 fullWidth
                 name="shipping_name"
@@ -170,7 +170,7 @@ export default function OrderForm({ initialValues, onSubmit, isLoading = false }
               />
             </Grid>
 
-            <Grid item xs={12} md={6}>
+            <Grid item size={{ xs: 12, md: 6 }}>
               <TextField
                 fullWidth
                 name="shipping_addr"
@@ -183,7 +183,7 @@ export default function OrderForm({ initialValues, onSubmit, isLoading = false }
               />
             </Grid>
 
-            <Grid item xs={12} md={4}>
+            <Grid item size={{ xs: 12, md: 4 }}>
               <TextField
                 fullWidth
                 name="shipping_city"
@@ -196,7 +196,7 @@ export default function OrderForm({ initialValues, onSubmit, isLoading = false }
               />
             </Grid>
 
-            <Grid item xs={12} md={4}>
+            <Grid item size={{ xs: 12, md: 4 }}>
               <TextField
                 fullWidth
                 name="shipping_country"
@@ -209,7 +209,7 @@ export default function OrderForm({ initialValues, onSubmit, isLoading = false }
               />
             </Grid>
 
-            <Grid item xs={12} md={4}>
+            <Grid item size={{ xs: 12, md: 4 }}>
               <TextField
                 fullWidth
                 name="shipping_zip"
@@ -223,13 +223,13 @@ export default function OrderForm({ initialValues, onSubmit, isLoading = false }
             </Grid>
 
             {/* Order Items */}
-            <Grid item xs={12}>
+            <Grid item size={12}>
               <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>
                 <FormattedMessage id="order-items" />
               </Typography>
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid item size={12}>
               <FieldArray name="order_items">
                 {({ push, remove }) => (
                   <Stack spacing={2}>
@@ -240,7 +240,7 @@ export default function OrderForm({ initialValues, onSubmit, isLoading = false }
                       return (
                         <Paper key={index} sx={{ p: 2 }}>
                           <Grid container spacing={2} alignItems="center">
-                            <Grid item xs={12} md={3}>
+                            <Grid item size={{ xs: 12, md: 3 }}>
                               <Autocomplete
                                 options={products}
                                 getOptionLabel={(option) => option.title}
@@ -265,7 +265,7 @@ export default function OrderForm({ initialValues, onSubmit, isLoading = false }
                               />
                             </Grid>
 
-                            <Grid item xs={12} md={2}>
+                            <Grid item size={{ xs: 12, md: 2 }}>
                               <TextField
                                 fullWidth
                                 type="number"
@@ -283,7 +283,7 @@ export default function OrderForm({ initialValues, onSubmit, isLoading = false }
                               />
                             </Grid>
 
-                            <Grid item xs={12} md={2}>
+                            <Grid item size={{ xs: 12, md: 2 }}>
                               <TextField
                                 fullWidth
                                 type="number"
@@ -301,7 +301,7 @@ export default function OrderForm({ initialValues, onSubmit, isLoading = false }
                               />
                             </Grid>
 
-                            <Grid item xs={12} md={2}>
+                            <Grid item size={{ xs: 12, md: 2 }}>
                               <TextField
                                 fullWidth
                                 type="number"
@@ -313,7 +313,7 @@ export default function OrderForm({ initialValues, onSubmit, isLoading = false }
                               />
                             </Grid>
 
-                            <Grid item xs={12} md={3}>
+                            <Grid item size={{ xs: 12, md: 3 }}>
                               <Stack direction="row" spacing={1}>
                                 {index === values.order_items.length - 1 && (
                                   <Button
@@ -349,10 +349,10 @@ export default function OrderForm({ initialValues, onSubmit, isLoading = false }
             </Grid>
 
             {/* Order Total */}
-            <Grid item xs={12}>
+            <Grid item size={12}>
               <Divider sx={{ my: 2 }} />
               <Grid container spacing={2}>
-                <Grid item xs={12} md={3}>
+                <Grid item size={{ xs: 12, md: 3 }}>
                   <TextField
                     fullWidth
                     select
@@ -372,7 +372,7 @@ export default function OrderForm({ initialValues, onSubmit, isLoading = false }
                   </TextField>
                 </Grid>
 
-                <Grid item xs={12} md={3}>
+                <Grid item size={{ xs: 12, md: 3 }}>
                   <TextField
                     fullWidth
                     type="number"
@@ -391,7 +391,7 @@ export default function OrderForm({ initialValues, onSubmit, isLoading = false }
               </Grid>
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid item size={12}>
               <Box display="flex" justifyContent="flex-end">
                 <Stack direction="row" spacing={2}>
                   <Button type="button" variant="outlined">
