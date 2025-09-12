@@ -46,7 +46,7 @@ const OrderCreate = Loadable(lazy(() => import('pages/orders/create')));
 
 const PaymentMethodsList = Loadable(lazy(() => import('pages/payment-method')));
 const PaymentMethodCreate = Loadable(lazy(() => import('pages/payment-method/create')));
-const PaymentMethodShow = Loadable(lazy(() => import('pages/payment-method/show')));
+const PaymentMethodShow = Loadable(lazy(() => import('pages/payment-method/edit')));
 
 // ==============================|| MAIN ROUTES ||============================== //
 

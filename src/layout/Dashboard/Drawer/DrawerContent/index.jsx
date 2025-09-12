@@ -22,7 +22,7 @@ export default function DrawerContent() {
         <Navigation />
         {/* {drawerOpen && !downLG && <NavCard />} */}
       </SimpleBar>
-      <NavUser />
+      {/* <NavUser /> */}
     </>
   );
 }

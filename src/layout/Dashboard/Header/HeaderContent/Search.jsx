@@ -12,7 +12,7 @@ import { SearchNormal1 } from 'iconsax-reactjs';
 export default function Search() {
   return (
     <Box sx={{ width: '100%', ml: { xs: 0, md: 2 } }}>
-      <FormControl sx={{ width: { xs: '100%', md: 224 } }}>
+      {/* <FormControl sx={{ width: { xs: '100%', md: 224 } }}>
         <OutlinedInput
           id="header-search"
           startAdornment={
@@ -25,7 +25,7 @@ export default function Search() {
           placeholder="Ctrl + K"
           sx={{ '& .MuiOutlinedInput-input': { p: 1.5 } }}
         />
-      </FormControl>
+      </FormControl> */}
     </Box>
   );
 }
