@@ -105,5 +105,10 @@
   "product-categories": "Product Categories",
   "all-categories": "All Categories",
   "Dashboard": "Dashboard",
-  "add-product-category": "Add Product Category"
+  "add-product-category": "Add Product Category",
+  "payment-methods": "Payment Methods",
+  "add-payment-method": "Add Payment Method",
+  "create-payment-method": "Create Payment Method",
+  "edit-payment-method": "Edit Payment Method",
+  "provider": "Provider"
 }

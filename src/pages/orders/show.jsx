@@ -132,7 +132,7 @@ export default function OrderShow() {
     >
       <Grid container spacing={3}>
         {/* Order Information */}
-        <Grid item xs={12} md={8}>
+        <Grid item size={{ xs: 12, md: 8 }}>
           <Card>
             <CardContent>
               <Typography variant="h5" gutterBottom>
@@ -140,19 +140,19 @@ export default function OrderShow() {
               </Typography>
 
               <Grid container spacing={2}>
-                <Grid item xs={6}>
+                <Grid item size={6}>
                   <Typography variant="subtitle2" color="textSecondary">
                     <FormattedMessage id="status" />
                   </Typography>
                   <Chip label={order.status} color={getStatusColor(order.status)} size="small" />
                 </Grid>
 
-                <Grid item xs={6}>
+                <Grid item size={6}>
                   <Typography variant="subtitle2" color="textSecondary">
                     <FormattedMessage id="total-amount" />
                   </Typography>
                   <Typography variant="h6">
-                    {order.total_amount} {order.currency}
+                    {order.total} {order.currency}
                   </Typography>
                 </Grid>
               </Grid>
@@ -164,35 +164,35 @@ export default function OrderShow() {
               </Typography>
 
               <Grid container spacing={2}>
-                <Grid item xs={12}>
+                <Grid item size={12}>
                   <Typography variant="subtitle2" color="textSecondary">
                     <FormattedMessage id="shipping-name" />
                   </Typography>
                   <Typography variant="body1">{order.shipping_name}</Typography>
                 </Grid>
 
-                <Grid item xs={12}>
+                <Grid item size={12}>
                   <Typography variant="subtitle2" color="textSecondary">
                     <FormattedMessage id="shipping-address" />
                   </Typography>
                   <Typography variant="body1">{order.shipping_addr}</Typography>
                 </Grid>
 
-                <Grid item xs={6}>
+                <Grid item size={6}>
                   <Typography variant="subtitle2" color="textSecondary">
                     <FormattedMessage id="shipping-city" />
                   </Typography>
                   <Typography variant="body1">{order.shipping_city}</Typography>
                 </Grid>
 
-                <Grid item xs={6}>
+                <Grid item size={6}>
                   <Typography variant="subtitle2" color="textSecondary">
                     <FormattedMessage id="shipping-country" />
                   </Typography>
                   <Typography variant="body1">{order.shipping_country}</Typography>
                 </Grid>
 
-                <Grid item xs={6}>
+                <Grid item size={6}>
                   <Typography variant="subtitle2" color="textSecondary">
                     <FormattedMessage id="shipping-zip" />
                   </Typography>
@@ -204,7 +204,7 @@ export default function OrderShow() {
         </Grid>
 
         {/* Customer Information */}
-        <Grid item xs={12} md={4}>
+        <Grid item size={{ xs: 12, md: 4 }}>
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>
@@ -226,10 +226,27 @@ export default function OrderShow() {
               )}
             </CardContent>
           </Card>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                {/* <FormattedMessage id="customer-information" /> */}
+                Payment Information
+              </Typography>
+
+              {order?.payments?.map((payment) => (
+                <Stack spacing={1} direction="row" justifyContent="space-between" alignItems="center" key={payment.id} sx={{ mb: 1 }}>
+                  <Typography variant="body1">{payment.reference}</Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    {payment.status}
+                  </Typography>
+                </Stack>
+              ))}
+            </CardContent>
+          </Card>
         </Grid>
 
         {/* Order Items */}
-        <Grid item xs={12}>
+        <Grid item size={{ xs: 12 }}>
           <Card>
             <CardContent>
               <Typography variant="h6" gutterBottom>
