@@ -27,10 +27,11 @@ import { FormattedMessage } from 'react-intl';
 
 // project imports
 import MainCard from 'components/MainCard';
-import { getOrderById, removeOrder } from 'api/orders';
+import { getOrderById, removeOrder, resendOrderEmail } from 'api/orders';
+import { openSnackbar } from 'store/snackbar';
 
 // icons
-import { Edit, Trash, ArrowLeft } from 'iconsax-reactjs';
+import { Edit, Trash, ArrowLeft, Check } from 'iconsax-reactjs';
 
 // ==============================|| ORDER SHOW ||============================== //
 
@@ -80,6 +81,24 @@ export default function OrderShow() {
     navigate('/orders');
   };
 
+  const handleResendEmail = async (orderId) => {
+    try {
+      const res = await resendOrderEmail(orderId);
+      // alert(res.message);
+      openSnackbar({
+        open: true,
+        message: res.message,
+        variant: 'alert',
+
+        alert: {
+          color: 'success'
+        }
+      });
+    } catch (err) {
+      alert(err.response?.data?.error || 'Error resending email');
+    }
+  };
+
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
       case 'pending':
@@ -127,6 +146,11 @@ export default function OrderShow() {
           <Button variant="outlined" color="error" startIcon={<Trash />} onClick={handleDelete} disabled={deleting}>
             {deleting ? <FormattedMessage id="deleting" /> : <FormattedMessage id="delete" />}
           </Button>
+          {order.status === 'paid' && (
+            <Button variant="outlined" color="success" startIcon={<Check />} onClick={() => handleResendEmail(order.id)}>
+              <FormattedMessage id="resend-email" />
+            </Button>
+          )}
         </Stack>
       }
     >

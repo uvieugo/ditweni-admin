@@ -78,3 +78,8 @@ export async function removeOrderItem(orderId, itemId) {
   mutate(`${endpoints.list}/${orderId}/items`);
   return res.data;
 }
+
+export async function resendOrderEmail(orderId) {
+  const res = await axiosServices.post(`${endpoints.list}/${orderId}/resend_email`);
+  return res.data;
+}

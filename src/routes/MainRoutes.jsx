@@ -48,6 +48,8 @@ const PaymentMethodsList = Loadable(lazy(() => import('pages/payment-method')));
 const PaymentMethodCreate = Loadable(lazy(() => import('pages/payment-method/create')));
 const PaymentMethodShow = Loadable(lazy(() => import('pages/payment-method/edit')));
 
+const Settings = Loadable(lazy(() => import('pages/site-settings')));
+
 // ==============================|| MAIN ROUTES ||============================== //
 
 const MainRoutes = {
@@ -132,6 +134,10 @@ const MainRoutes = {
         {
           path: 'payment-methods/:id',
           element: <PaymentMethodShow />
+        },
+        {
+          path: 'settings',
+          element: <Settings />
         }
       ]
     },

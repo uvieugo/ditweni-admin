@@ -6,6 +6,7 @@ import MainCard from 'components/MainCard';
 import ProductForm from './ProductForm';
 import { getProductById, updateProduct } from 'api/products';
 import { getProductCategories } from '../../api/product-categories';
+import AdminProductDownloads from 'components/AdminProductDownloads';
 
 // material-ui
 import { Alert, CircularProgress, Box } from '@mui/material';
@@ -50,6 +51,11 @@ export default function ProductEdit() {
       loadProduct();
     }
   }, [id]);
+
+  const handleDownloadsChange = () => {
+    // Callback when downloads are updated (for admin)
+    console.log('Downloads updated');
+  };
 
   const handleSubmit = async (values, { setSubmitting }) => {
     setSaving(true);
@@ -119,6 +125,7 @@ export default function ProductEdit() {
       )}
 
       <ProductForm initialValues={product} onSubmit={handleSubmit} isLoading={saving} productCategories={productCategories} />
+      <AdminProductDownloads product={product} onDownloadsChange={handleDownloadsChange} />
     </MainCard>
   );
 }

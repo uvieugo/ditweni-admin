@@ -114,7 +114,7 @@ export default function ProductsList() {
                       </Stack>
                     </Stack>
                   </TableCell>
-                  <TableCell>{product.category}</TableCell>
+                  <TableCell>{product.category_name}</TableCell>
                   {/* <TableCell>
                     {product.price} {product.currency}
                   </TableCell> */}
