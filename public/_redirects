@@ -1,1 +1,13 @@
-/*    /index.html   200
+# --- Static assets (JS, CSS, images, fonts, etc.) ---
+/assets/*     /assets/:splat   200
+/static/*     /static/:splat   200
+/_next/*      /_next/:splat    200
+/favicon.ico  /favicon.ico     200
+/robots.txt   /robots.txt      200
+/sitemap.xml  /sitemap.xml     200
+
+# --- API endpoints (if frontend and backend share a domain) ---
+#/api/*        /api/:splat      200
+
+# --- Catch-all for SPA routing ---
+/*            /index.html      200
