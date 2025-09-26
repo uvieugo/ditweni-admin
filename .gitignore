@@ -112,3 +112,4 @@ dist
 .env.production
 BACKEND_IMAGE_UPLOAD.md
 notes/
+deploy.sh
